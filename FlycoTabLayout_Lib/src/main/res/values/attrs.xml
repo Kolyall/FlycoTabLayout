@@ -149,6 +149,7 @@
         <attr name="tl_tab_width"/>
 
         <!-- title -->
+        <attr name="tl_textTypeface"/>
         <attr name="tl_textsize"/>
         <attr name="tl_textSelectColor"/>
         <attr name="tl_textUnselectColor"/>
@@ -198,6 +199,7 @@
         <attr name="tl_tab_width"/>
 
         <!-- title -->
+        <attr name="tl_textTypeface"/>
         <attr name="tl_textsize"/>
         <attr name="tl_textSelectColor"/>
         <attr name="tl_textUnselectColor"/>
