@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -37,7 +38,7 @@ import java.util.Collections;
 public class SlidingTabLayout extends HorizontalScrollView implements ViewPager.OnPageChangeListener {
     private Context mContext;
     private ViewPager mViewPager;
-    private ArrayList<String> mTitles;
+    private ArrayList<CharSequence> mTitles;
     private LinearLayout mTabsContainer;
     private int mCurrentTab;
     private float mCurrentPositionOffset;
@@ -88,6 +89,7 @@ public class SlidingTabLayout extends HorizontalScrollView implements ViewPager.
     private static final int TEXT_BOLD_WHEN_SELECT = 1;
     private static final int TEXT_BOLD_BOTH = 2;
     private float mTextsize;
+    private Typeface mTypeface;
     private int mTextSelectColor;
     private int mTextUnselectColor;
     private int mTextBold;
@@ -155,6 +157,9 @@ public class SlidingTabLayout extends HorizontalScrollView implements ViewPager.
         mDividerWidth = ta.getDimension(R.styleable.SlidingTabLayout_tl_divider_width, dp2px(0));
         mDividerPadding = ta.getDimension(R.styleable.SlidingTabLayout_tl_divider_padding, dp2px(12));
 
+        if (ta.hasValue(R.styleable.SlidingTabLayout_tl_textTypeface)) {
+            mTypeface = Typeface.createFromAsset(getContext().getAssets(), ta.getString(R.styleable.SlidingTabLayout_tl_textTypeface));
+        }
         mTextsize = ta.getDimension(R.styleable.SlidingTabLayout_tl_textsize, sp2px(14));
         mTextSelectColor = ta.getColor(R.styleable.SlidingTabLayout_tl_textSelectColor, Color.parseColor("#ffffff"));
         mTextUnselectColor = ta.getColor(R.styleable.SlidingTabLayout_tl_textUnselectColor, Color.parseColor("#AAffffff"));
@@ -230,7 +235,7 @@ public class SlidingTabLayout extends HorizontalScrollView implements ViewPager.
         for (int i = 0; i < mTabCount; i++) {
             tabView = View.inflate(mContext, R.layout.layout_tab, null);
             CharSequence pageTitle = mTitles == null ? mViewPager.getAdapter().getPageTitle(i) : mTitles.get(i);
-            addTab(i, pageTitle.toString(), tabView);
+            addTab(i, pageTitle, tabView);
         }
 
         updateTabStyles();
@@ -243,14 +248,14 @@ public class SlidingTabLayout extends HorizontalScrollView implements ViewPager.
         }
 
         CharSequence pageTitle = mTitles == null ? mViewPager.getAdapter().getPageTitle(mTabCount) : mTitles.get(mTabCount);
-        addTab(mTabCount, pageTitle.toString(), tabView);
+        addTab(mTabCount, pageTitle, tabView);
         this.mTabCount = mTitles == null ? mViewPager.getAdapter().getCount() : mTitles.size();
 
         updateTabStyles();
     }
 
     /** 创建并添加tab */
-    private void addTab(final int position, String title, View tabView) {
+    private void addTab(final int position, CharSequence title, View tabView) {
         TextView tv_tab_title = (TextView) tabView.findViewById(R.id.tv_tab_title);
         if (tv_tab_title != null) {
             if (title != null) tv_tab_title.setText(title);
@@ -387,6 +392,9 @@ public class SlidingTabLayout extends HorizontalScrollView implements ViewPager.
         if (mIndicatorStyle == STYLE_NORMAL && mIndicatorWidthEqualTitle) {
             TextView tab_title = (TextView) currentTabView.findViewById(R.id.tv_tab_title);
             mTextPaint.setTextSize(mTextsize);
+            if (mTypeface != null) {
+                mTextPaint.setTypeface(mTypeface);
+            }
             float textWidth = mTextPaint.measureText(tab_title.getText().toString());
             margin = (right - left - textWidth) / 2;
         }
@@ -403,6 +411,9 @@ public class SlidingTabLayout extends HorizontalScrollView implements ViewPager.
             if (mIndicatorStyle == STYLE_NORMAL && mIndicatorWidthEqualTitle) {
                 TextView next_tab_title = (TextView) nextTabView.findViewById(R.id.tv_tab_title);
                 mTextPaint.setTextSize(mTextsize);
+                if (mTypeface != null) {
+                    mTextPaint.setTypeface(mTypeface);
+                }
                 float nextTextWidth = mTextPaint.measureText(next_tab_title.getText().toString());
                 float nextMargin = (nextTabRight - nextTabLeft - nextTextWidth) / 2;
                 margin = margin + mCurrentPositionOffset * (nextMargin - margin);
@@ -822,6 +833,9 @@ public class SlidingTabLayout extends HorizontalScrollView implements ViewPager.
         if (tipView != null) {
             TextView tv_tab_title = (TextView) tabView.findViewById(R.id.tv_tab_title);
             mTextPaint.setTextSize(mTextsize);
+            if (mTypeface != null) {
+                mTextPaint.setTypeface(mTypeface);
+            }
             float textWidth = mTextPaint.measureText(tv_tab_title.getText().toString());
             float textHeight = mTextPaint.descent() - mTextPaint.ascent();
             MarginLayoutParams lp = (MarginLayoutParams) tipView.getLayoutParams();
